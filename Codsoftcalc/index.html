@@ -1,0 +1,342 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bethwel's Futuristic Calculator</title>
+
+
+    <style>
+        /* CSS for Bethwel's Futuristic Calculator(where CSS code starts) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #0f1723;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .calculator-container {
+            background: linear-gradient(145deg, #19213a, #101628);
+            border-radius: 20px;
+            box-shadow: 0 15px 25px rgba(0, 0, 255, 0.2),
+                        0 0 50px rgba(61, 90, 254, 0.1);
+            padding: 20px;
+            width: 350px;
+        }
+
+        .calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 15px;
+        }
+
+        .display {
+            grid-column: 1 / -1;
+            background-color: rgba(17, 24, 39, 0.8);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            padding: 20px;
+            text-align: right;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            word-wrap: break-word;
+            word-break: break-all;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            box-shadow: inset 0 0 10px rgba(79, 70, 229, 0.2);
+        }
+
+        .previous-operand {
+            color: rgba(156, 163, 175, 0.8);
+            font-size: 1.2rem;
+            min-height: 24px;
+        }
+
+        .current-operand {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 2.5rem;
+            font-weight: 500;
+        }
+
+        button {
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            height: 65px;
+            outline: none;
+            transition: 0.2s;
+            color: #ffffff;
+            background: linear-gradient(145deg, #1e293b, #141e30);
+            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3), 
+                        -3px -3px 8px rgba(55, 65, 100, 0.1);
+        }
+
+        button:hover {
+            background: linear-gradient(145deg, #1e293b, #192841);
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4), 
+                        -2px -2px 6px rgba(55, 65, 100, 0.15);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            background: linear-gradient(145deg, #192841, #1e293b);
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3), 
+                        inset -2px -2px 5px rgba(55, 65, 100, 0.1);
+            transform: translateY(0);
+        }
+
+        .span-2 {
+            grid-column: span 2;
+        }
+
+        .operator {
+            background: linear-gradient(145deg, #2563eb, #1d4ed8);
+            color: #ffffff;
+        }
+
+        .operator:hover {
+            background: linear-gradient(145deg, #2563eb, #2563eb);
+        }
+
+        .equals {
+            background: linear-gradient(145deg, #10b981, #059669);
+            color: #ffffff;
+        }
+
+        .equals:hover {
+            background: linear-gradient(145deg, #10b981, #10b981);
+        }
+
+        .clear, .delete {
+            background: linear-gradient(145deg, #ef4444, #dc2626);
+            color: #ffffff;
+        }
+
+        .clear:hover, .delete:hover {
+            background: linear-gradient(145deg, #ef4444, #ef4444);
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="calculator">
+            <div class="display">
+                <div class="previous-operand"></div>
+                <div class="current-operand">0</div>
+            </div>
+            <button class="clear span-2">AC</button>
+            <button class="delete">DEL</button>
+            <button class="operator">÷</button>
+            <button class="number">7</button>
+            <button class="number">8</button>
+            <button class="number">9</button>
+            <button class="operator">×</button>
+            <button class="number">4</button>
+            <button class="number">5</button>
+            <button class="number">6</button>
+            <button class="operator">-</button>
+            <button class="number">1</button>
+            <button class="number">2</button>
+            <button class="number">3</button>
+            <button class="operator">+</button>
+            <button class="number span-2">0</button>
+            <button class="number">.</button>
+            <button class="equals">=</button>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript for Bethwel's Futuristic Calculator(where the js code starts)
+        class Calculator {
+            constructor(previousOperandElement, currentOperandElement) {
+                this.previousOperandElement = previousOperandElement;
+                this.currentOperandElement = currentOperandElement;
+                this.clear();
+            }
+
+            clear() {
+                this.currentOperand = '0';
+                this.previousOperand = '';
+                this.operation = undefined;
+            }
+
+            delete() {
+                if (this.currentOperand === '0') return;
+                this.currentOperand = this.currentOperand.toString().slice(0, -1);
+                if (this.currentOperand === '') this.currentOperand = '0';
+            }
+
+            appendNumber(number) {
+                if (number === '.' && this.currentOperand.includes('.')) return;
+                if (this.currentOperand === '0' && number !== '.') {
+                    this.currentOperand = number;
+                } else {
+                    this.currentOperand = this.currentOperand.toString() + number.toString();
+                }
+            }
+
+            chooseOperation(operation) {
+                if (this.currentOperand === '0') return;
+                if (this.previousOperand !== '') {
+                    this.compute();
+                }
+                this.operation = operation;
+                this.previousOperand = this.currentOperand;
+                this.currentOperand = '0';
+            }
+
+            compute() {
+                let computation;
+                const prev = parseFloat(this.previousOperand);
+                const current = parseFloat(this.currentOperand);
+                if (isNaN(prev) || isNaN(current)) return;
+                switch (this.operation) {
+                    case '+':
+                        computation = prev + current;
+                        break;
+                    case '-':
+                        computation = prev - current;
+                        break;
+                    case '×':
+                        computation = prev * current;
+                        break;
+                    case '÷':
+                        if (current === 0) {
+                            alert("Cannot divide by zero");
+                            return;
+                        }
+                        computation = prev / current;
+                        break;
+                    default:
+                        return;
+                }
+                this.currentOperand = computation;
+                this.operation = undefined;
+                this.previousOperand = '';
+            }
+
+            getDisplayNumber(number) {
+                const stringNumber = number.toString();
+                const integerDigits = parseFloat(stringNumber.split('.')[0]);
+                const decimalDigits = stringNumber.split('.')[1];
+                let integerDisplay;
+                if (isNaN(integerDigits)) {
+                    integerDisplay = '0';
+                } else {
+                    integerDisplay = integerDigits.toLocaleString('en', { maximumFractionDigits: 0 });
+                }
+                if (decimalDigits != null) {
+                    return `${integerDisplay}.${decimalDigits}`;
+                } else {
+                    return integerDisplay;
+                }
+            }
+
+            updateDisplay() {
+                this.currentOperandElement.innerText = this.getDisplayNumber(this.currentOperand);
+                if (this.operation != null) {
+                    this.previousOperandElement.innerText =
+                        `${this.getDisplayNumber(this.previousOperand)} ${this.operation}`;
+                } else {
+                    this.previousOperandElement.innerText = '';
+                }
+            }
+        }
+
+        // Select DOM(this is where the js code sees and interracts with the html code) elements
+        const previousOperandElement = document.querySelector('.previous-operand');
+        const currentOperandElement = document.querySelector('.current-operand');
+        const calculator = new Calculator(previousOperandElement, currentOperandElement);
+
+        // the event listeners
+        document.querySelectorAll('.number').forEach(button => {
+            button.addEventListener('click', () => {
+                calculator.appendNumber(button.innerText);
+                calculator.updateDisplay();
+            });
+        });
+
+        document.querySelectorAll('.operator').forEach(button => {
+            button.addEventListener('click', () => {
+                calculator.chooseOperation(button.innerText);
+                calculator.updateDisplay();
+            });
+        });
+
+        document.querySelector('.equals').addEventListener('click', () => {
+            calculator.compute();
+            calculator.updateDisplay();
+        });
+
+        document.querySelector('.clear').addEventListener('click', () => {
+            calculator.clear();
+            calculator.updateDisplay();
+        });
+
+        document.querySelector('.delete').addEventListener('click', () => {
+            calculator.delete();
+            calculator.updateDisplay();
+        });
+
+        // these are the keyboard event listeners
+        document.addEventListener('keydown', event => {
+            if (/[0-9\.]/.test(event.key)) {
+                calculator.appendNumber(event.key);
+                calculator.updateDisplay();
+            } else if (['+', '-'].includes(event.key)) {
+                calculator.chooseOperation(event.key);
+                calculator.updateDisplay();
+            } else if (event.key === '*') {
+                calculator.chooseOperation('×');
+                calculator.updateDisplay();
+            } else if (event.key === '/') {
+                event.preventDefault();
+                calculator.chooseOperation('÷');
+                calculator.updateDisplay();
+            } else if (event.key === 'Enter' || event.key === '=') {
+                calculator.compute();
+                calculator.updateDisplay();
+            } else if (event.key === 'Escape') {
+                calculator.clear();
+                calculator.updateDisplay();
+            } else if (event.key === 'Backspace') {
+                calculator.delete();
+                calculator.updateDisplay();
+            }
+        });
+
+        // touch for gesture detection when button is pressed
+        let touchStartX, touchStartY;
+        const calculatorContainer = document.querySelector('.calculator-container');
+        
+        calculatorContainer.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        });
+        
+        calculatorContainer.addEventListener('touchend', e => {
+            const touchEndX = e.changedTouches[0].screenX;
+            const touchEndY = e.changedTouches[0].screenY;
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            
+            // Swipe left gesture for delete
+            if (deltaX < -50 && Math.abs(deltaY) < 30) {
+                calculator.delete();
+                calculator.updateDisplay();
+            }
+        });
+    </script>
+</body>
+</html>
