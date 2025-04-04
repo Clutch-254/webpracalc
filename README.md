@@ -1,4 +1,4 @@
-# Bethwel's Futuristic Calculator
+# Matt's Futuristic Calculator
 
 ## Project Overview
 This is a sleek, modern calculator web application with a futuristic design aesthetic. The calculator provides all standard arithmetic operations (addition, subtraction, multiplication, division) with a responsive user interface that works across devices.
